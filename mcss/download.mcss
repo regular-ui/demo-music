@@ -1,0 +1,9 @@
+.m-download {
+    position: absolute;
+    z-index: 20;
+    top: 0;
+    right: -1px;
+    width: 254px;
+    height: 336px;
+    background: url(../../assets/img/download.png);
+}

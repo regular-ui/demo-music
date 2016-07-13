@@ -1,0 +1,17 @@
+.m-column {
+    .column_hd {
+        border-bottom: 2px solid #c20c0c;
+    }
+
+    .column_tt {
+        display: inline-block;
+        font-size: 20px;
+        line-height: 40px;
+        font-weight: normal;
+        margin: 0;
+        margin-right: 20px;
+    }
+
+    .column_bd {
+    }
+}

@@ -1,0 +1,35 @@
+@import 'rgui-css-standard/navbar/core.mcss';
+
+// Varibles:
+// ========================================================================
+
+$m-navbar_height = 70px;
+
+// Component:       `m-navbar`
+// ========================================================================
+
+.m-navbar {
+    font-size: 14px;
+    // background: $m-navbar_background;
+    color: white;
+
+    > li {
+
+        > a, > span {
+            $line-height: $m-navbar_height;
+            padding: 0 20px;
+            color: #ccc;
+            text-shadow: 0 1px 0 #1b1b1b;
+        }
+    }
+
+    > li:hover > a {
+        background: #555;
+    }
+
+    > li:active > a {}
+
+    > li.z-crt > a {
+        background: #333;
+    }
+}

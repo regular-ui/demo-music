@@ -1,0 +1,33 @@
+<div class="g-top">
+    <div class="g-wrap">
+        <div class="m-logo"></div>
+        <ul class="m-navbar">
+            <li z-crt={this.isCurrent('explore')}><a href="#explore">发现音乐</a></li>
+            <li z-crt={this.isCurrent('mine')}><a href="#mine">我的音乐</a></li>
+            <li z-crt={this.isCurrent('friend')}><a href="#friend">朋友</a></li>
+            <li z-crt={this.isCurrent('download')}><a href="#download">下载客户端</a></li>
+        </ul>
+    </div>
+</div>
+<div class="g-hd">
+    <div class="g-wrap"><div class="m-download"></div></div>
+    <carousel />
+</div>
+<div class="g-bd">
+    <div class="g-wrap">
+        <div class="g-mn">
+            <div class="m-column">
+                <div class="column_hd">
+                    <h3 class="column_tt">歌曲列表</h3>
+                    <span>x首歌</span>
+                </div>
+                <div class="column_bd"></div>
+            </div>
+        </div>
+        <div class="g-sd"></div>
+    </div>
+</div>
+<div class="g-ft">
+    <div class="g-wrap">
+    </div>
+</div>

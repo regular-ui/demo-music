@@ -1,0 +1,50 @@
+.m-carousel {
+    position: relative;
+
+    .carousel_item {
+        display: none;
+
+        > a {
+            display: block;
+            width: $g-wrap_width;
+            margin: 0 auto;
+
+            > img {
+                display: block;
+            }
+        }
+    }
+
+    .carousel_item.z-crt {
+        display: block;
+    }
+
+    .carousel_nav {
+        @extend .f-lsn;
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 5px;
+        text-align: center;
+
+        > li {
+            display: inline-block;
+            cursor: pointer;
+            $size: 22px;
+
+            > span {
+                display: inline-block;
+                margin: 8px;
+                $size: 6px;
+                $border-radius: 100%;
+                background: rgba(255, 255, 255, 0.6);
+            }
+        }
+
+        > li:hover, > li.z-crt {
+            > span {
+                background: #b90b0b;
+            }
+        }
+    }
+}

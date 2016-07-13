@@ -1,0 +1,51 @@
+$g-wrap_width = 980px;
+$g-sd_width = 252px;
+
+.g-top {
+    height: 70px;
+    background: #444;
+}
+
+.g-hd {
+    height: 336px;
+    background: #aef;
+
+    > .g-wrap {
+        position: relative;
+    }
+}
+
+.g-bd {
+    $clearfix();
+}
+
+.g-mn {
+    float: left;
+    $box-sizing: border-box;
+    width: $g-wrap_width - $g-sd_width;
+    padding: 40px 30px;
+    min-height: 400px;
+    background: white;
+    border-left: 1px solid #d3d3d3;
+}
+
+.g-sd {
+    float: left;
+    $box-sizing: border-box;
+    width: $g-sd_width;
+    min-height: 400px;
+    background: white;
+    border-left: 1px solid #d3d3d3;
+    border-right: 1px solid #d3d3d3;
+}
+
+.g-ft {
+    height: 125px;
+    background: #f9f9f9;
+    border-top: 1px solid #d5d5d5;
+}
+
+.g-wrap {
+    width: $g-wrap_width;
+    margin: 0 auto;
+}
