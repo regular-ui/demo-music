@@ -9,27 +9,64 @@ $m-navbar_height = 70px;
 // ========================================================================
 
 .m-navbar {
+    $clearfix();
     font-size: 14px;
-    // background: $m-navbar_background;
-    color: white;
 
     > li {
+        position: relative;
+        float: left;
+        padding-left: 2px;
+        margin-left: -2px;
 
         > a, > span {
             $line-height: $m-navbar_height;
-            padding: 0 20px;
+            padding-left: 18px;
+            padding-right: 20px;
             color: #ccc;
             text-shadow: 0 1px 0 #1b1b1b;
         }
+
+        &:after {
+            content: '';
+            display: block;
+            position: absolute;
+            right: 0;
+            top: ($m-navbar_height - 12px) / 2;
+            border-left: 1px solid #030303;
+            border-right: 1px solid #414141;
+            height: 12px;
+        }
     }
 
-    > li:hover > a {
-        background: #555;
+    > li:hover {
+        background: $g-top_background_url left -470px;
+
+        > a {
+           background: $g-top_background_url right -470px;
+        }
     }
 
     > li:active > a {}
 
-    > li.z-crt > a {
-        background: #333;
+    > li.z-crt {
+        background: $g-top_background_url left -155px;
+
+        > a {
+           background: $g-top_background_url right -155px;
+        }
+
+        &:before {
+            content: '';
+            display: block;
+            position: absolute;
+            z-index: 2;
+            left: 50%;
+            top: 63px;
+            width: 14px;
+            height: 9px;
+            margin-left: -7px;
+            overflow: hidden;
+            background: $g-top_background_url -226px 0;
+        }
     }
 }

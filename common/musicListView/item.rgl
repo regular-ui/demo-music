@@ -1,0 +1,18 @@
+<tr class="{class}" z-dis={disabled} z-divider={divider} title={title} r-hide={!visible}>
+    <td>
+        <input type="checkbox" class="musicListView_checkbox" />
+        <a class="musicListView_play" z-sel={selected} on-click={this.select()}></a>
+    </td>
+    <td class="f-toe"><a>{value.title}</a></td>
+    <td class="musicListView_duration">
+        <span>{value.duration}</span>
+        <div>
+            <a class="musicListView_btn musicListView_btn-collect"></a>
+            <a class="musicListView_btn musicListView_btn-share"></a>
+            <a class="musicListView_btn musicListView_btn-download"></a>
+            <a class="musicListView_btn musicListView_btn-remove"></a>
+        </div>
+    </td>
+    <td class="f-toe"><a>{value.artist}</a></td>
+    <td class="f-toe"><a>{value.album}</a></td>
+</tr>

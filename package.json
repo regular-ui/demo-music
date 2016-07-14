@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "regularjs": "^0.4.4",
+    "regularjs": "0.4.3",
     "rgui-css-base": "regular-ui/css-base#master",
     "rgui-css-standard": "regular-ui/css-standard#master",
     "rgui-ui-base": "0.2.0-alpha.2",
@@ -9,7 +9,8 @@
     "rgui-ui-modal": "0.2.0-alpha",
     "rgui-ui-overlay": "regular-ui/ui-overlay#master",
     "rgui-ui-resizable": "regular-ui/ui-resizable#master",
-    "rgui-ui-select": "regular-ui/ui-select#master"
+    "rgui-ui-select": "regular-ui/ui-select#master",
+    "rgui-ui-slider": "regular-ui/ui-slider#master"
   },
   "devDependencies": {
     "core-js": "^2.4.0"

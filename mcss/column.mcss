@@ -1,4 +1,6 @@
 .m-column {
+    margin-bottom: 40px;
+
     .column_hd {
         border-bottom: 2px solid #c20c0c;
     }

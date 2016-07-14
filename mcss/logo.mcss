@@ -1,0 +1,9 @@
+.m-logo {
+    display: block;
+    width: 162px;
+    height: 42px;
+    margin-top: 12px;
+    margin-right: 18px;
+    background: $g-top_background_url 0 0;
+    text-indent: -9999px;
+}

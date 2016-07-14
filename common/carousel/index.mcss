@@ -22,10 +22,12 @@
     .carousel_nav {
         @extend .f-lsn;
         position: absolute;
-        left: 0;
+        left: 50%;
         right: 0;
         bottom: 5px;
         text-align: center;
+        width: $g-wrap_width;
+        margin-left: -($g-wrap_width + $g-sd_width) / 2;
 
         > li {
             display: inline-block;
@@ -38,6 +40,7 @@
                 $size: 6px;
                 $border-radius: 100%;
                 background: rgba(255, 255, 255, 0.6);
+                $box-shadow: 0 0 3px rgba(0, 0, 0, 0.6);
             }
         }
 

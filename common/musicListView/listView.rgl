@@ -1,0 +1,14 @@
+<table class="m-musicListView {class}" z-dis={disabled} r-hide={!visible}>
+    <thead>
+        <tr>
+            <th width="54"><input type="checkbox" class="musicListView_checkbox" /></th>
+            <th>歌曲标题</th>
+            <th width="90">时长</th>
+            <th width="20%">歌手</th>
+            <th width="24%">专辑</th>
+        </tr>
+    </thead>
+    <tbody>
+        {#inc this.$body}
+    </tbody>
+</table>

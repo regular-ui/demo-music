@@ -1,42 +1,54 @@
 $g-wrap_width = 980px;
-$g-sd_width = 252px;
+$g-sd_width = 250px;
+
+.g-wrap {
+    width: $g-wrap_width;
+    margin: 0 auto;
+}
 
 .g-top {
-    height: 70px;
-    background: #444;
+    background: $g-top_background_url 0 -80px repeat-x;
+}
+
+.g-subtop {
+    position: relative;
+    z-index: 1;
+    height: 5px;
+    background: $g-top_background_url 0 -230px repeat-x;
+    $box-shadow: 0 2px 2px rgba(0, 0, 0, 0.5);
 }
 
 .g-hd {
-    height: 336px;
-    background: #aef;
-
     > .g-wrap {
         position: relative;
     }
 }
 
 .g-bd {
-    $clearfix();
+    > .g-wrap {
+        $clearfix();
+        $box-sizing: border-box;
+        border-left: 1px solid #d3d3d3;
+        border-right: 1px solid #d3d3d3;
+        background: white;
+    }
 }
 
 .g-mn {
     float: left;
     $box-sizing: border-box;
-    width: $g-wrap_width - $g-sd_width;
+    width: $g-wrap_width - $g-sd_width - 2px;
     padding: 40px 30px;
     min-height: 400px;
     background: white;
-    border-left: 1px solid #d3d3d3;
+    border-right: 1px solid #d3d3d3;
 }
 
 .g-sd {
     float: left;
-    $box-sizing: border-box;
     width: $g-sd_width;
     min-height: 400px;
     background: white;
-    border-left: 1px solid #d3d3d3;
-    border-right: 1px solid #d3d3d3;
 }
 
 .g-ft {
@@ -45,7 +57,3 @@ $g-sd_width = 252px;
     border-top: 1px solid #d5d5d5;
 }
 
-.g-wrap {
-    width: $g-wrap_width;
-    margin: 0 auto;
-}

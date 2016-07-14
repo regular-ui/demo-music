@@ -1,0 +1,4 @@
+$g-top_background_url = url('../../assets/img/g-top.png');
+$iconall_background_url = url('../../assets/img/iconall.png');
+$statbar_background_url = url('../../assets/img/statbar.png');
+$table_background_url = url('../../assets/img/table.png');

@@ -1,0 +1,93 @@
+.m-musicListView {
+    // - (It has been realized in normalize.css) Remove most spacing between table cells.
+    // border-collapse: collapse;
+    // border-spacing: 0;
+    // - Block element behavior.
+    table-layout: fixed;
+    width: 100%;
+    border: 1px solid #d9d9d9;
+
+    th, td {
+        text-align: left;
+        padding: 6px 10px;
+        line-height: 18px;
+    }
+
+    thead th {
+        position: relative;
+        background: $table_background_url 0 0 repeat-x;
+        height: 34px;
+        padding: 0 10px 3px;
+        font-weight: normal;
+        color: #666;
+    }
+
+    thead th + th {
+        &:before {
+            content: '';
+            display: block;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: $table_background_url 0 -56px;
+        }
+    }
+
+    tbody tr:nth-of-type(odd) {
+        background: #f7f7f7;
+    }
+
+    .musicListView_checkbox {
+        margin-left: 4px;
+    }
+
+    .musicListView_play {
+        display: inline-block;
+        float: right;
+        $size: 17px;
+        background: $table_background_url 0 -103px;
+    }
+    .musicListView_play:hover {
+        background-position: 0 -128px;
+    }
+    .musicListView_play.z-sel {
+        background-position: -20px -128px;
+    }
+
+    .musicListView_duration > div {
+        display: none;
+    }
+
+    tbody tr:hover {
+        .musicListView_duration > span { display: none; }
+        .musicListView_duration > div { display: block; }
+    }
+
+    tbody tr.z-dis {
+        color: #bbb;
+
+        .musicListView_play {
+            $opacity: 0.5;
+            background-position: 0 -103px;
+            cursor: default;
+        }
+    }
+
+    .musicListView_btn {
+        display: inline-block;
+        vertical-align: bottom;
+        width: 17px;
+        height: 16px;
+        background: $table_background_url 0 -9999px;
+    }
+    .musicListView_btn-collect { background-position: 0 -174px; }
+    .musicListView_btn-collect:hover { background-position: -20px -174px; }
+    .musicListView_btn-share { background-position: 0 -195px; }
+    .musicListView_btn-share:hover { background-position: -20px -195px; }
+    .musicListView_btn-download { background-position: -81px -174px; }
+    .musicListView_btn-download:hover { background-position: -104px -174px; }
+    .musicListView_btn-remove { background-position: 0 -217px; }
+    .musicListView_btn-remove:hover { background-position: -20px -217px; }
+}
