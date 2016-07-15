@@ -1,7 +1,7 @@
 <div class="m-carousel {class}" z-dis={disabled} r-hide={!visible}>
     <div class="carousel_list">
         {#list list as item}
-        <div class="carousel_item" z-crt={current === item_index} style="background: {item.color}">
+        <div class="carousel_item" r-hide={current !== item_index} r-animation={animation} style="background: {item.color}">
             <a href={item.href}><img src={item.src} /></a>
         </div>
         {/list}

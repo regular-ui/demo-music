@@ -1,9 +1,10 @@
 import { Component } from 'rgui-ui-base';
 import template from './index.rgl';
 
-import '../common/carousel';
-import '../common/player';
-import '../common/musicListView';
+import '../component/navbar';
+import '../component/carousel';
+import '../component/player';
+import '../component/musicListView';
 
 const App = Component.extend({
     name: 'app',
@@ -33,11 +34,6 @@ const App = Component.extend({
             this.$update();
         }, 200);
     },
-    isCurrent: function(type) {
-        var hash = location.href.split('#')[1] || '';
-
-        return hash.includes(type);
-    }
 });
 
 export default App;

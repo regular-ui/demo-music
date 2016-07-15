@@ -1,0 +1,28 @@
+<div class="m-player {class}" z-dis={disabled} r-hide={!visible}>
+    <div class="player_inner">
+        <div class="player_ctrls">
+            <a class="player_ctrl player_ctrl-prev"></a>
+            <a class="player_ctrl player_ctrl-{CTRL_STATUS[status]}" on-click={status = 1 - status}></a>
+            <a class="player_ctrl player_ctrl-next"></a>
+        </div>
+        <div class="player_cover">
+            <img src="assets/img/thumb-10.jpg" />
+        </div>
+        <div class="player_detail">
+            <div class="player_info">
+                <a class="player_title">{music.title}</a>
+                <a class="player_artist">{music.artist}</a>
+            </div>
+            <slider class="u-slider-player" percent={time | toPercent: music.duration} />
+        </div>
+        <div class="player_time"><span>{time | timeFormat}</span> / {music.duration | timeFormat}</div>
+        <div class="player_btns">
+            <a class="player_btn player_btn-collect"></a>
+            <a class="player_btn player_btn-share"></a>
+            <span class="player_divider"></span>
+            <a class="player_btn player_btn-volume"></a>
+            <a class="player_btn player_btn-{mode}"></a>
+            <a class="player_list">12</a>
+        </div>
+    </div>
+</div>

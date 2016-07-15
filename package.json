@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "regularjs": "0.4.3",
     "rgui-css-base": "regular-ui/css-base#master",
     "rgui-css-standard": "regular-ui/css-standard#master",
     "rgui-ui-base": "0.2.0-alpha.2",

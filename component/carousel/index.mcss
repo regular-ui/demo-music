@@ -1,9 +1,8 @@
 .m-carousel {
     position: relative;
+    min-height: 336px;
 
     .carousel_item {
-        display: none;
-
         > a {
             display: block;
             width: $g-wrap_width;

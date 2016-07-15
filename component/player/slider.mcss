@@ -5,13 +5,13 @@
 
     .slider_track {
         height: 100%;
-        background: $statbar_background_url left 0;
+        background: $background_url-statbar left 0;
     }
 
     .slider_trail {
         float: left;
         height: 100%;
-        background: $statbar_background_url left -66px;
+        background: $background_url-statbar left -66px;
     }
 
     .slider_handle {
@@ -22,7 +22,7 @@
         margin-left: -7px;
         width: 22px;
         height: 24px;
-        background: $iconall_background_url 0 -250px;
+        background: $background_url-iconall 0 -250px;
     }
 
     .slider_handle:hover {

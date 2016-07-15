@@ -4,6 +4,6 @@
     height: 42px;
     margin-top: 12px;
     margin-right: 18px;
-    background: $g-top_background_url 0 0;
+    background: $background_url-top 0 0;
     text-indent: -9999px;
 }

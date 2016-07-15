@@ -18,6 +18,6 @@ const MusicListView = ListView.extend({
 const MusicItem = Item.extend({
     name: 'musicItem',
     template: itemTemplate,
-})
+});
 
 export default MusicListView;

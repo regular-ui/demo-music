@@ -1,18 +1,16 @@
-@abstract 'mass/index.mcss';
-@abstract 'rgui-css-base/variable/index.mcss';
-@abstract 'rgui-css-base/helper/index.mcss';
-@import 'rgui-css-base/function/index.mcss';
+@import 'rgui-css-base/index.mcss';
 
 @import './mcss/variable.mcss';
 @import './mcss/base.mcss';
 @import './mcss/grid.mcss';
+@import './mcss/effect.mcss';
 
-@import './mcss/navbar.mcss';
 @import './mcss/logo.mcss';
 @import './mcss/download.mcss';
 @import './mcss/column.mcss';
 
-@import './common/musicListView/index.mcss';
-@import './common/carousel/index.mcss';
-@import './common/player/index.mcss';
-@import './common/player/slider.mcss';
+@import './component/navbar/index.mcss';
+@import './component/musicListView/index.mcss';
+@import './component/carousel/index.mcss';
+@import './component/player/index.mcss';
+@import './component/player/slider.mcss';

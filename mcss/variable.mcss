@@ -1,4 +1,13 @@
-$g-top_background_url = url('../../assets/img/g-top.png');
-$iconall_background_url = url('../../assets/img/iconall.png');
-$statbar_background_url = url('../../assets/img/statbar.png');
-$table_background_url = url('../../assets/img/table.png');
+$brand-primary = #c20c0c;
+
+$font-size-base = 12px;
+$line-height-base = 1.6;
+$font-family-sans-serif = Arial, Helvetica, sans-serif;
+
+$color-base = #333;
+
+/* Background URL */
+$background_url-top = url('../../assets/img/top.png');
+$background_url-iconall = url('../../assets/img/iconall.png');
+$background_url-statbar = url('../../assets/img/statbar.png');
+$background_url-table = url('../../assets/img/table.png');

@@ -1,0 +1,18 @@
+<tr class="{class}" z-dis={disabled} z-divider={divider} title={title} r-hide={!visible}>
+    <td>
+        <input type="checkbox" class="table_checkbox" disabled={disabled} />
+        <a class="table_play" z-sel={selected} on-click={this.select()}></a>
+    </td>
+    <td class="f-toe"><a>{value.title}</a></td>
+    <td class="table_duration">
+        <span>{value.duration | timeFormat}</span>
+        <div>
+            <a class="table_btn table_btn-collect"></a>
+            <a class="table_btn table_btn-share"></a>
+            <a class="table_btn table_btn-download"></a>
+            <a class="table_btn table_btn-remove" on-click={this.remove()}></a>
+        </div>
+    </td>
+    <td class="f-toe"><a>{value.artist}</a></td>
+    <td class="f-toe"><a>{value.album}</a></td>
+</tr>

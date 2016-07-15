@@ -1,12 +1,7 @@
 <div class="g-top">
     <div class="g-wrap f-cb">
         <a class="m-logo f-fl" href="#"></a>
-        <ul class="m-navbar f-fl">
-            <li z-crt={this.isCurrent('explore')}><a href="#explore">发现音乐</a></li>
-            <li z-crt={this.isCurrent('mine')}><a href="#mine">我的音乐</a></li>
-            <li z-crt={this.isCurrent('friend')}><a href="#friend">朋友</a></li>
-            <li z-crt={this.isCurrent('download')}><a href="#download">下载客户端</a></li>
-        </ul>
+        <navbar />
     </div>
 </div>
 <div class="g-subtop"></div>
