@@ -1,7 +1,7 @@
 <table class="m-table {class}" z-dis={disabled} r-hide={!visible}>
     <thead>
         <tr>
-            <th width="54"><input type="checkbox" class="table_checkbox" /></th>
+            <th width="54"><input type="checkbox" class="table_checkbox" r-model={allChecked} /></th>
             <th>歌曲标题</th>
             <th width="90">时长</th>
             <th width="20%">歌手</th>

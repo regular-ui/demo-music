@@ -13,6 +13,20 @@ import itemTemplate from './item.rgl';
 const MusicListView = ListView.extend({
     name: 'musicListView',
     template: listViewTemplate,
+    computed: {
+        allChecked: {
+            get() {
+                return this.data._list.every((item) => {
+                    return item.data.checked;
+                });
+            },
+            set(value) {
+                return this.data._list.forEach((item) => {
+                    item.data.checked = value;
+                });
+            }
+        }
+    }
 });
 
 const MusicItem = Item.extend({

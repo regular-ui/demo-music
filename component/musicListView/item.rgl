@@ -1,6 +1,6 @@
 <tr class="{class}" z-dis={disabled} z-divider={divider} title={title} r-hide={!visible}>
     <td>
-        <input type="checkbox" class="table_checkbox" disabled={disabled} />
+        <input type="checkbox" class="table_checkbox" r-model={checked} disabled={disabled} />
         <a class="table_play" z-sel={selected} on-click={this.select()}></a>
     </td>
     <td class="f-toe"><a>{value.title}</a></td>

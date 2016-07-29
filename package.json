@@ -4,7 +4,7 @@
     "rgui-css-standard": "regular-ui/css-standard#master",
     "rgui-ui-base": "0.2.0-alpha.2",
     "rgui-ui-drag": "regular-ui/ui-drag#master",
-    "rgui-ui-listview": "regular-ui/ui-listview#master",
+    "rgui-ui-listview": "0.2.0-alpha",
     "rgui-ui-modal": "0.2.0-alpha",
     "rgui-ui-overlay": "regular-ui/ui-overlay#master",
     "rgui-ui-resizable": "regular-ui/ui-resizable#master",
