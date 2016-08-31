@@ -17,7 +17,7 @@ const Carousel = Component.extend({
      * @override
      */
     config() {
-        this.data = Object.assign({
+        this.defaults({
             current: 2,
             duration: 3000,
             list: [
@@ -28,7 +28,7 @@ const Carousel = Component.extend({
                 {color: '#000000', src: 'assets/img/carousel-5.jpg', href: '#'},
             ],
             animation: 'on: enter; class: animated fadeIn;',
-        }, this.data);
+        });
         this.supr();
 
         setInterval(() => {

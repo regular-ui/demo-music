@@ -10,10 +10,10 @@ const App = Component.extend({
     name: 'app',
     template,
     config() {
-        this.data = Object.assign({
+        this.defaults({
             musicList: [],
             selectedMusic: undefined,
-        }, this.data);
+        });
         this.supr();
 
         setTimeout(() => {

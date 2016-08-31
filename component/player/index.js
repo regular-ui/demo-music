@@ -18,13 +18,13 @@ const Player = Component.extend({
      * @override
      */
     config() {
-        this.data = Object.assign({
+        this.defaults({
             time: 0,
             status: 0,
             mode: 'one',
             music: {},
             CTRL_STATUS: ['play', 'pause'],
-        }, this.data);
+        });
         this.supr();
 
         this.$watch('music', (newValue, oldValue) => {

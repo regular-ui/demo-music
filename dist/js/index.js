@@ -105,13 +105,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _index2 = _interopRequireDefault(_index);
 
-	__webpack_require__(29);
-
 	__webpack_require__(9);
 
 	__webpack_require__(11);
 
-	__webpack_require__(21);
+	__webpack_require__(13);
+
+	__webpack_require__(24);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -121,10 +121,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    config: function config() {
 	        var _this = this;
 
-	        this.data = Object.assign({
+	        this.defaults({
 	            musicList: [],
 	            selectedMusic: undefined
-	        }, this.data);
+	        });
 	        this.supr();
 
 	        setTimeout(function () {
@@ -182,6 +182,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _directive2 = _interopRequireDefault(_directive);
 
+	var _util = __webpack_require__(7);
+
+	var _util2 = _interopRequireDefault(_util);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	/**
@@ -196,15 +200,36 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * @protected
 	     */
-
 	    config: function config() {
-	        this.data = Object.assign({
+	        this.defaults({
 	            readonly: false,
 	            disabled: false,
 	            visible: true,
 	            'class': ''
-	        }, this.data);
+	        });
 	        this.supr();
+	    },
+
+	    /**
+	     * @method defaults(...options) 设置`this.data`的默认值
+	     * @protected
+	     * @param  {object} ...options 若干默认选项。从左到右依次进行，不会覆盖已经设置过的值。
+	     * @return {object} data 返回`this.data`
+	     */
+	    defaults: function defaults() {
+	        for (var _len = arguments.length, options = Array(_len), _key = 0; _key < _len; _key++) {
+	            options[_key] = arguments[_key];
+	        }
+
+	        return _util2.default.defaults.apply(_util2.default, [this.data].concat(options));
+	    },
+
+	    /**
+	     * @protected
+	     */
+	    watch: function watch() {
+	        // just for override
+	        // recommand putting all `this.$watch` here.
 	    }
 	}).filter(_filter2.default).directive(_directive2.default);
 
@@ -301,6 +326,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	directive['z-crt'] = _util2.default.createBoolClassDirective('z-crt');
 	directive['z-sel'] = _util2.default.createBoolClassDirective('z-sel');
 	directive['z-chk'] = _util2.default.createBoolClassDirective('z-chk');
+	directive['z-act'] = _util2.default.createBoolClassDirective('z-act');
 	directive['z-dis'] = _util2.default.createBoolClassDirective('z-dis');
 
 	directive['r-show'] = _util2.default.createBoolDirective(function (elem, value) {
@@ -329,25 +355,54 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _regularjs = __webpack_require__(4);
 
-	var _ = {};
+	var _ = {
+	    /**
+	     * @method defaults(target,...sources) 设置默认值。不会覆盖目标对象中已经设置的值（除`undefined`）。
+	     * @param  {object} target 目标对象
+	     * @param  {object} ...sources 默认对象。从左到右依次进行，不会覆盖已经设置过的值。
+	     * @return {object} target 返回目标对象
+	     */
+	    defaults: function defaults(target) {
+	        for (var _len = arguments.length, sources = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+	            sources[_key - 1] = arguments[_key];
+	        }
 
-	_.createBoolDirective = function (func) {
-	    return function (elem, value) {
-	        var _this = this;
+	        sources.forEach(function (source) {
+	            for (var key in source) {
+	                if (source.hasOwnProperty(key) && target[key] === undefined) target[key] = source[key];
+	            }
+	        });
+	        return target;
+	    },
 
-	        if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' && value.type === 'expression') {
-	            this.$watch(value, function (newValue, oldValue) {
-	                if (!newValue === !oldValue) return;
-	                func.call(_this, elem, newValue);
-	            });
-	        } else if (!!value || value === '') func.call(this, elem, true);
-	    };
-	};
+	    /**
+	     * @method createBoolDirective(func) 创建一个布尔指令。简化了实现原生regular指令中的`$watch`等过程。
+	     * @param  {function} func(elem,value) 简化指令函数。`elem`表示应用该指令的元素，`value`表示实时改变的值。
+	     * @return {Directive} 返回一个指令
+	     */
+	    createBoolDirective: function createBoolDirective(func) {
+	        return function (elem, value) {
+	            var _this = this;
 
-	_.createBoolClassDirective = function (boolClass) {
-	    return _.createBoolDirective(function (elem, value) {
-	        _regularjs.dom[value ? 'addClass' : 'delClass'](elem, boolClass);
-	    });
+	            if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' && value.type === 'expression') {
+	                this.$watch(value, function (newValue, oldValue) {
+	                    if (!newValue === !oldValue) return;
+	                    func.call(_this, elem, newValue);
+	                });
+	            } else if (!!value || value === '') func.call(this, elem, true);
+	        };
+	    },
+
+	    /**
+	     * @method createBoolClassDirective(boolClass) 创建一个布尔样式指令。自动添加/删除CSS类。
+	     * @param  {string} boolClass 需要控制的CSS类
+	     * @return {Directive} 返回一个指令
+	     */
+	    createBoolClassDirective: function createBoolClassDirective(boolClass) {
+	        return _.createBoolDirective(function (elem, value) {
+	            _regularjs.dom[value ? 'addClass' : 'delClass'](elem, boolClass);
+	        });
+	    }
 	};
 
 	exports.default = _;
@@ -376,6 +431,42 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	var Navbar = _rguiUiBase.Component.extend({
+	    name: 'navbar',
+	    template: _index2.default,
+	    isCurrent: function isCurrent(type) {
+	        var hash = location.href.split('#')[1] || '';
+
+	        return hash.includes(type);
+	    }
+	});
+
+	exports.default = Navbar;
+
+/***/ },
+/* 10 */
+/***/ function(module, exports) {
+
+	module.exports =[{"type":"element","tag":"ul","attrs":[{"type":"attribute","name":"class","value":"m-navbar f-fl"}],"children":[{"type":"text","text":"\n    "},{"type":"element","tag":"li","attrs":[{"type":"attribute","name":"z-crt","value":{"type":"expression","body":"c['isCurrent']('explore')","constant":false,"setbody":false}}],"children":[{"type":"element","tag":"a","attrs":[{"type":"attribute","name":"href","value":"#explore"}],"children":[{"type":"text","text":"发现音乐"}]}]},{"type":"text","text":"\n    "},{"type":"element","tag":"li","attrs":[{"type":"attribute","name":"z-crt","value":{"type":"expression","body":"c['isCurrent']('mine')","constant":false,"setbody":false}}],"children":[{"type":"element","tag":"a","attrs":[{"type":"attribute","name":"href","value":"#mine"}],"children":[{"type":"text","text":"我的音乐"}]}]},{"type":"text","text":"\n    "},{"type":"element","tag":"li","attrs":[{"type":"attribute","name":"z-crt","value":{"type":"expression","body":"c['isCurrent']('friend')","constant":false,"setbody":false}}],"children":[{"type":"element","tag":"a","attrs":[{"type":"attribute","name":"href","value":"#friend"}],"children":[{"type":"text","text":"朋友"}]}]},{"type":"text","text":"\n    "},{"type":"element","tag":"li","attrs":[{"type":"attribute","name":"z-crt","value":{"type":"expression","body":"c['isCurrent']('download')","constant":false,"setbody":false}}],"children":[{"type":"element","tag":"a","attrs":[{"type":"attribute","name":"href","value":"#download"}],"children":[{"type":"text","text":"下载客户端"}]}]},{"type":"text","text":"\n"}]}]
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _rguiUiBase = __webpack_require__(2);
+
+	var _index = __webpack_require__(12);
+
+	var _index2 = _interopRequireDefault(_index);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 	/**
 	 * @class Carousel
 	 * @extend Component
@@ -394,12 +485,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    config: function config() {
 	        var _this = this;
 
-	        this.data = Object.assign({
+	        this.defaults({
 	            current: 2,
 	            duration: 3000,
 	            list: [{ color: '#ada4ff', src: 'assets/img/carousel-1.jpg', href: '#' }, { color: '#81a69e', src: 'assets/img/carousel-2.jpg', href: '#' }, { color: '#dfcbb2', src: 'assets/img/carousel-3.jpg', href: '#' }, { color: '#34190e', src: 'assets/img/carousel-4.jpg', href: '#' }, { color: '#000000', src: 'assets/img/carousel-5.jpg', href: '#' }],
 	            animation: 'on: enter; class: animated fadeIn;'
-	        }, this.data);
+	        });
 	        this.supr();
 
 	        setInterval(function () {
@@ -413,13 +504,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = Carousel;
 
 /***/ },
-/* 10 */
+/* 12 */
 /***/ function(module, exports) {
 
 	module.exports =[{"type":"element","tag":"div","attrs":[{"type":"attribute","name":"class","value":{"type":"expression","body":"['m-carousel ',c._sg_('class', d, e)].join('')","constant":false,"setbody":false}},{"type":"attribute","name":"z-dis","value":{"type":"expression","body":"c._sg_('disabled', d, e)","constant":false,"setbody":"c._ss_('disabled',p_,d, '=', 1)"}},{"type":"attribute","name":"r-hide","value":{"type":"expression","body":"(!c._sg_('visible', d, e))","constant":false,"setbody":false}}],"children":[{"type":"text","text":"\n    "},{"type":"element","tag":"div","attrs":[{"type":"attribute","name":"class","value":"carousel_list"}],"children":[{"type":"text","text":"\n        "},{"type":"list","sequence":{"type":"expression","body":"c._sg_('list', d, e)","constant":false,"setbody":"c._ss_('list',p_,d, '=', 1)"},"alternate":[],"variable":"item","body":[{"type":"text","text":"\n        "},{"type":"element","tag":"div","attrs":[{"type":"attribute","name":"class","value":"carousel_item"},{"type":"attribute","name":"r-hide","value":{"type":"expression","body":"c._sg_('current', d, e)!==c._sg_('item_index', d, e)","constant":false,"setbody":false}},{"type":"attribute","name":"r-animation","value":{"type":"expression","body":"c._sg_('animation', d, e)","constant":false,"setbody":"c._ss_('animation',p_,d, '=', 1)"}},{"type":"attribute","name":"style","value":{"type":"expression","body":"['background: ',c._sg_('color', c._sg_('item', d, e))].join('')","constant":false,"setbody":false}}],"children":[{"type":"text","text":"\n            "},{"type":"element","tag":"a","attrs":[{"type":"attribute","name":"href","value":{"type":"expression","body":"c._sg_('href', c._sg_('item', d, e))","constant":false,"setbody":"c._ss_('href',p_,c._sg_('item', d, e), '=', 0)"}}],"children":[{"type":"element","tag":"img","attrs":[{"type":"attribute","name":"src","value":{"type":"expression","body":"c._sg_('src', c._sg_('item', d, e))","constant":false,"setbody":"c._ss_('src',p_,c._sg_('item', d, e), '=', 0)"}}]}]},{"type":"text","text":"\n        "}]},{"type":"text","text":"\n        "}]},{"type":"text","text":"\n    "}]},{"type":"text","text":"\n    "},{"type":"element","tag":"ul","attrs":[{"type":"attribute","name":"class","value":"carousel_nav"}],"children":[{"type":"text","text":"\n        "},{"type":"list","sequence":{"type":"expression","body":"c._sg_('list', d, e)","constant":false,"setbody":"c._ss_('list',p_,d, '=', 1)"},"alternate":[],"variable":"item","body":[{"type":"text","text":"\n        "},{"type":"element","tag":"li","attrs":[{"type":"attribute","name":"z-crt","value":{"type":"expression","body":"c._sg_('current', d, e)===c._sg_('item_index', d, e)","constant":false,"setbody":false}},{"type":"attribute","name":"on-click","value":{"type":"expression","body":"c._ss_('current',c._sg_('item_index', d, e),d, '=', 1)","constant":false,"setbody":"c._ss_('current',p_,d, '=', 1)"}}],"children":[{"type":"element","tag":"span","attrs":[],"children":[]}]},{"type":"text","text":"\n        "}]},{"type":"text","text":"\n    "}]},{"type":"text","text":"\n    "},{"type":"element","tag":"div","attrs":[{"type":"attribute","name":"class","value":"carousel_prev"}],"children":[]},{"type":"text","text":"\n    "},{"type":"element","tag":"div","attrs":[{"type":"attribute","name":"class","value":"carousel_next"}],"children":[]},{"type":"text","text":"\n"}]}]
 
 /***/ },
-/* 11 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -430,11 +521,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _rguiUiBase = __webpack_require__(2);
 
-	var _index = __webpack_require__(12);
+	var _index = __webpack_require__(14);
 
 	var _index2 = _interopRequireDefault(_index);
 
-	__webpack_require__(13);
+	__webpack_require__(15);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -456,13 +547,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    config: function config() {
 	        var _this = this;
 
-	        this.data = Object.assign({
+	        this.defaults({
 	            time: 0,
 	            status: 0,
 	            mode: 'one',
 	            music: {},
 	            CTRL_STATUS: ['play', 'pause']
-	        }, this.data);
+	        });
 	        this.supr();
 
 	        this.$watch('music', function (newValue, oldValue) {
@@ -499,13 +590,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = Player;
 
 /***/ },
-/* 12 */
+/* 14 */
 /***/ function(module, exports) {
 
 	module.exports =[{"type":"element","tag":"div","attrs":[{"type":"attribute","name":"class","value":{"type":"expression","body":"['m-player ',c._sg_('class', d, e)].join('')","constant":false,"setbody":false}},{"type":"attribute","name":"z-dis","value":{"type":"expression","body":"c._sg_('disabled', d, e)","constant":false,"setbody":"c._ss_('disabled',p_,d, '=', 1)"}},{"type":"attribute","name":"r-hide","value":{"type":"expression","body":"(!c._sg_('visible', d, e))","constant":false,"setbody":false}}],"children":[{"type":"text","text":"\n    "},{"type":"element","tag":"div","attrs":[{"type":"attribute","name":"class","value":"player_inner"}],"children":[{"type":"text","text":"\n        "},{"type":"element","tag":"div","attrs":[{"type":"attribute","name":"class","value":"player_ctrls"}],"children":[{"type":"text","text":"\n            "},{"type":"element","tag":"a","attrs":[{"type":"attribute","name":"class","value":"player_ctrl player_ctrl-prev"}],"children":[]},{"type":"text","text":"\n            "},{"type":"element","tag":"a","attrs":[{"type":"attribute","name":"class","value":{"type":"expression","body":"['player_ctrl player_ctrl-',c._sg_(c._sg_('status', d, e), c._sg_('CTRL_STATUS', d, e))].join('')","constant":false,"setbody":false}},{"type":"attribute","name":"on-click","value":{"type":"expression","body":"c._ss_('status',1-c._sg_('status', d, e),d, '=', 1)","constant":false,"setbody":"c._ss_('status',p_,d, '=', 1)"}}],"children":[]},{"type":"text","text":"\n            "},{"type":"element","tag":"a","attrs":[{"type":"attribute","name":"class","value":"player_ctrl player_ctrl-next"}],"children":[]},{"type":"text","text":"\n        "}]},{"type":"text","text":"\n        "},{"type":"element","tag":"div","attrs":[{"type":"attribute","name":"class","value":"player_cover"}],"children":[{"type":"text","text":"\n            "},{"type":"element","tag":"img","attrs":[{"type":"attribute","name":"src","value":"assets/img/thumb-10.jpg"}]},{"type":"text","text":"\n        "}]},{"type":"text","text":"\n        "},{"type":"element","tag":"div","attrs":[{"type":"attribute","name":"class","value":"player_detail"}],"children":[{"type":"text","text":"\n            "},{"type":"element","tag":"div","attrs":[{"type":"attribute","name":"class","value":"player_info"}],"children":[{"type":"text","text":"\n                "},{"type":"element","tag":"a","attrs":[{"type":"attribute","name":"class","value":"player_title"}],"children":[{"type":"expression","body":"c._sg_('title', c._sg_('music', d, e))","constant":false,"setbody":"c._ss_('title',p_,c._sg_('music', d, e), '=', 0)"}]},{"type":"text","text":"\n                "},{"type":"element","tag":"a","attrs":[{"type":"attribute","name":"class","value":"player_artist"}],"children":[{"type":"expression","body":"c._sg_('artist', c._sg_('music', d, e))","constant":false,"setbody":"c._ss_('artist',p_,c._sg_('music', d, e), '=', 0)"}]},{"type":"text","text":"\n            "}]},{"type":"text","text":"\n            "},{"type":"element","tag":"slider","attrs":[{"type":"attribute","name":"class","value":"u-slider-player"},{"type":"attribute","name":"percent","value":{"type":"expression","body":"(function(t){t = c._f_('toPercent' ).get.call( c,t, c._sg_('duration', c._sg_('music', d, e)));return t})(c._sg_('time', d, e))","constant":false,"setbody":"c._ss_('time',(function(t){t = c._f_('toPercent' ).set.call( c,t, c._sg_('duration', c._sg_('music', d, e)));return t})(p_),d, '=', 1)"}}]},{"type":"text","text":"\n        "}]},{"type":"text","text":"\n        "},{"type":"element","tag":"div","attrs":[{"type":"attribute","name":"class","value":"player_time"}],"children":[{"type":"element","tag":"span","attrs":[],"children":[{"type":"expression","body":"(function(t){t = c._f_('timeFormat' ).get.call( c,t);return t})(c._sg_('time', d, e))","constant":false,"setbody":"c._ss_('time',(function(t){t = c._f_('timeFormat' ).set.call( c,t);return t})(p_),d, '=', 1)"}]},{"type":"text","text":" / "},{"type":"expression","body":"(function(t){t = c._f_('timeFormat' ).get.call( c,t);return t})(c._sg_('duration', c._sg_('music', d, e)))","constant":false,"setbody":"c._ss_('duration',(function(t){t = c._f_('timeFormat' ).set.call( c,t);return t})(p_),c._sg_('music', d, e), '=', 0)"}]},{"type":"text","text":"\n        "},{"type":"element","tag":"div","attrs":[{"type":"attribute","name":"class","value":"player_btns"}],"children":[{"type":"text","text":"\n            "},{"type":"element","tag":"a","attrs":[{"type":"attribute","name":"class","value":"player_btn player_btn-collect"}],"children":[]},{"type":"text","text":"\n            "},{"type":"element","tag":"a","attrs":[{"type":"attribute","name":"class","value":"player_btn player_btn-share"}],"children":[]},{"type":"text","text":"\n            "},{"type":"element","tag":"span","attrs":[{"type":"attribute","name":"class","value":"player_divider"}],"children":[]},{"type":"text","text":"\n            "},{"type":"element","tag":"a","attrs":[{"type":"attribute","name":"class","value":"player_btn player_btn-volume"}],"children":[]},{"type":"text","text":"\n            "},{"type":"element","tag":"a","attrs":[{"type":"attribute","name":"class","value":{"type":"expression","body":"['player_btn player_btn-',c._sg_('mode', d, e)].join('')","constant":false,"setbody":false}}],"children":[]},{"type":"text","text":"\n            "},{"type":"element","tag":"a","attrs":[{"type":"attribute","name":"class","value":"player_list"}],"children":[{"type":"text","text":"12"}]},{"type":"text","text":"\n        "}]},{"type":"text","text":"\n    "}]},{"type":"text","text":"\n"}]}]
 
 /***/ },
-/* 13 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -515,7 +606,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.Slider = undefined;
 
-	var _slider = __webpack_require__(14);
+	var _slider = __webpack_require__(16);
 
 	var _slider2 = _interopRequireDefault(_slider);
 
@@ -524,7 +615,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.Slider = _slider2.default;
 
 /***/ },
-/* 14 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -535,13 +626,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _rguiUiBase = __webpack_require__(2);
 
-	var _index = __webpack_require__(15);
-
-	var _index2 = _interopRequireDefault(_index);
+	var _rguiUiDrag = __webpack_require__(17);
 
 	var _regularjs = __webpack_require__(4);
 
-	__webpack_require__(16);
+	var _index = __webpack_require__(23);
+
+	var _index2 = _interopRequireDefault(_index);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -549,7 +640,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @class Slider
 	 * @extend Component
 	 * @param {object}                  options.data                     =  绑定属性
-	 * @param {string='Hello World'}    options.data.message            <=> 消息
+	 * @param {number=0}                options.data.value              <=> 数值
+	 * @param {number=0}                options.data.min                <=> 最小值
+	 * @param {number=100}              options.data.max                <=> 最大值
+	 * @param {number=0}                options.data.step               <=> 间隔
+	 * @param {boolean=false}           options.data.readonly            => 是否只读
 	 * @param {boolean=false}           options.data.disabled            => 是否禁用
 	 * @param {boolean=true}            options.data.visible             => 是否显示
 	 * @param {string=''}               options.data.class               => 补充class
@@ -562,24 +657,44 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @override
 	     */
 	    config: function config() {
+	        this.defaults({
+	            value: 0,
+	            min: 0,
+	            max: 100,
+	            step: 0,
+	            _grid: { x: 0, y: 0 }
+	        });
+	        this.supr();
+	        this.watch();
+	    },
+
+	    /**
+	     * @protected
+	     * @override
+	     */
+	    watch: function watch() {
 	        var _this = this;
 
-	        this.data = Object.assign({
-	            percent: 0
-	        }, this.data);
-	        this.supr();
-
-	        this.$watch('percent', function (newValue, oldValue) {
+	        this.$watch('value', function (newValue, oldValue) {
 	            _this.$emit('change', {
 	                sender: _this,
-	                percent: newValue
+	                value: newValue
 	            });
 	        });
 	    },
-	    _getProxy: function _getProxy() {
-	        return this.$refs.handle;
-	    },
 
+	    computed: {
+	        percent: {
+	            get: function get() {
+	                return (this.data.value - this.data.min) / (this.data.max - this.data.min) * 100;
+	            },
+	            set: function set(percent) {
+	                var value = +this.data.min + (this.data.max - this.data.min) * percent / 100;
+	                if (this.data.step) value = Math.round(value / this.data.step) * this.data.step;
+	                this.data.value = value;
+	            }
+	        }
+	    },
 	    /**
 	     * @private
 	     */
@@ -589,28 +704,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var e = $event.event;
 	        var $handle = this.$refs.handle;
 	        var $parent = $handle.offsetParent;
-	        var position = _regularjs.dom.getPosition($parent);
-	        this.data.percent = (e.clientX - position.left) / $parent.offsetWidth * 100;
+	        var dimension = _regularjs.dom.getDimension($parent, 'center');
+
+	        this.$set('percent', (e.clientX - dimension.left) / dimension.width * 100);
+	    },
+
+	    /**
+	     * @private
+	     */
+	    _onDragStart: function _onDragStart($event) {
+	        this.data._grid.x = this.data.step / (this.data.max - this.data.min) * $event.range.width;
 	    },
 
 	    /**
 	     * @private
 	     */
 	    _onDrag: function _onDrag($event) {
-	        this.data.percent = $event.left / $event.range.right * 100;
+	        this.$set('percent', $event.left / $event.range.width * 100);
 	    }
 	});
 
 	exports.default = Slider;
 
 /***/ },
-/* 15 */
-/***/ function(module, exports) {
-
-	module.exports =[{"type":"element","tag":"movable","attrs":[{"type":"attribute","name":"disabled","value":{"type":"expression","body":"c._sg_('readonly', d, e)||c._sg_('disabled', d, e)","constant":false,"setbody":false}},{"type":"attribute","name":"proxy","value":{"type":"expression","body":"c._sg_('handle', c._sg_('$refs', c))","constant":false,"setbody":"c._ss_('handle',p_,c._sg_('$refs', c), '=', 0)"}},{"type":"attribute","name":"axis","value":"horizontal"},{"type":"attribute","name":"range","value":"offsetParent"},{"type":"attribute","name":"rangeMode","value":"none"},{"type":"attribute","name":"on-drag","value":{"type":"expression","body":"c['_onDrag'](c._sg_('$event', d, e))","constant":false,"setbody":false}}],"children":[{"type":"text","text":"\n"},{"type":"element","tag":"div","attrs":[{"type":"attribute","name":"class","value":{"type":"expression","body":"['u-slider ',c._sg_('class', d, e)].join('')","constant":false,"setbody":false}},{"type":"attribute","name":"z-dis","value":{"type":"expression","body":"c._sg_('disabled', d, e)","constant":false,"setbody":"c._ss_('disabled',p_,d, '=', 1)"}},{"type":"attribute","name":"r-hide","value":{"type":"expression","body":"(!c._sg_('visible', d, e))","constant":false,"setbody":false}},{"type":"attribute","name":"on-mousedown","value":{"type":"expression","body":"c['_onMouseDown'](c._sg_('$event', d, e))","constant":false,"setbody":false}}],"children":[{"type":"text","text":"\n    "},{"type":"element","tag":"div","attrs":[{"type":"attribute","name":"class","value":"slider_track"}],"children":[{"type":"text","text":"\n        "},{"type":"element","tag":"div","attrs":[{"type":"attribute","name":"class","value":"slider_trail"},{"type":"attribute","name":"style","value":{"type":"expression","body":"['width: ',c._sg_('percent', d, e),'%'].join('')","constant":false,"setbody":false}}],"children":[]},{"type":"text","text":"\n    "}]},{"type":"text","text":"\n    "},{"type":"element","tag":"div","attrs":[{"type":"attribute","name":"class","value":"slider_handle"},{"type":"attribute","name":"ref","value":"handle"},{"type":"attribute","name":"style","value":{"type":"expression","body":"['left: ',c._sg_('percent', d, e),'%'].join('')","constant":false,"setbody":false}}],"children":[]},{"type":"text","text":"\n"}]},{"type":"text","text":"\n"}]}]
-
-/***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -620,15 +737,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.Movable = exports.Droppable = exports.Draggable = undefined;
 
-	var _draggable = __webpack_require__(17);
+	var _draggable = __webpack_require__(18);
 
 	var _draggable2 = _interopRequireDefault(_draggable);
 
-	var _droppable = __webpack_require__(19);
+	var _droppable = __webpack_require__(21);
 
 	var _droppable2 = _interopRequireDefault(_droppable);
 
-	var _movable = __webpack_require__(20);
+	var _movable = __webpack_require__(22);
 
 	var _movable2 = _interopRequireDefault(_movable);
 
@@ -639,7 +756,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.Movable = _movable2.default;
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -650,7 +767,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _rguiUiBase = __webpack_require__(2);
 
-	var _manager = __webpack_require__(18);
+	var _manager = __webpack_require__(19);
 
 	var _manager2 = _interopRequireDefault(_manager);
 
@@ -677,13 +794,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @override
 	     */
 	    config: function config() {
-	        this.data = Object.assign({
+	        this.defaults({
 	            proxy: 'clone',
 	            value: undefined,
 	            'class': 'z-draggable',
 	            sourceClass: 'z-dragSource',
 	            proxyClass: 'z-dragProxy'
-	        }, this.data);
+	        });
 	        this.supr();
 
 	        this._onMouseDown = this._onMouseDown.bind(this);
@@ -746,7 +863,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        proxy.style.left = position.left + 'px';
 	        proxy.style.top = position.top + 'px';
-	        proxy.style.zIndex = '2000';
+	        proxy.style.zIndex = '9999';
 	        proxy.style.position = 'fixed';
 	        proxy.style.display = '';
 	    },
@@ -816,7 +933,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param  {MouseEvent} e 鼠标事件
 	     * @return {void}
 	     */
-	    _onMouseMoveStart: function _onMouseMoveStart(e) {
+	    _onMouseMoveStart: function _onMouseMoveStart(e, override) {
 	        var proxy = this._getProxy();
 
 	        // 代理元素的位置从MouseMoveStart开始算，这样在MouseDown中也可以预先处理位置
@@ -837,7 +954,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _manager2.default.left = _manager2.default.startLeft;
 	        _manager2.default.top = _manager2.default.startTop;
 
-	        this._dragStart();
+	        !override && this._dragStart();
 	    },
 
 	    /**
@@ -1063,7 +1180,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = Draggable;
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1072,37 +1189,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 
-	var _regularjs = __webpack_require__(4);
-
-	Object.assign(_regularjs.dom, {
-	    getPosition: function getPosition(elem) {
-	        var doc = elem && elem.ownerDocument;
-	        var docElem = doc.documentElement;
-	        var body = doc.body;
-
-	        var box = elem.getBoundingClientRect ? elem.getBoundingClientRect() : { left: 0, top: 0 };
-
-	        var clientLeft = docElem.clientLeft || body.clientLeft || 0;
-	        var clientTop = docElem.clientTop || body.clientTop || 0;
-
-	        return { left: box.left - clientLeft, top: box.top - clientTop };
-	    },
-	    getSize: function getSize(elem) {
-	        return { width: elem.clientWidth, height: elem.clientHeight };
-	    },
-	    getDimension: function getDimension(elem) {
-	        return Object.assign(this.getSize(elem), this.getPosition(elem));
-	    },
-	    isInRect: function isInRect(position, dimension) {
-	        if (!position || !dimension) return false;
-
-	        return position.left > dimension.left && position.left < dimension.left + dimension.width && position.top > dimension.top && position.top < dimension.top + dimension.height;
-	    },
-	    getComputedStyle: function getComputedStyle(elem, property) {
-	        var computedStyle = elem.currentStyle || window.getComputedStyle(elem, null);
-	        return property ? computedStyle[property] : computedStyle;
-	    }
-	});
+	__webpack_require__(20);
 
 	var manager = {
 	    dragging: false,
@@ -1129,7 +1216,53 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = manager;
 
 /***/ },
-/* 19 */
+/* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _regularjs = __webpack_require__(4);
+
+	Object.assign(_regularjs.dom, {
+	    getPosition: function getPosition(elem) {
+	        var doc = elem && elem.ownerDocument;
+	        var docElem = doc.documentElement;
+	        var body = doc.body;
+
+	        var box = elem.getBoundingClientRect ? elem.getBoundingClientRect() : { left: 0, top: 0 };
+
+	        var clientLeft = docElem.clientLeft || body.clientLeft || 0;
+	        var clientTop = docElem.clientTop || body.clientTop || 0;
+
+	        return { left: box.left - clientLeft, top: box.top - clientTop };
+	    },
+	    getSize: function getSize(elem) {
+	        var mode = arguments.length <= 1 || arguments[1] === undefined ? 'outside' : arguments[1];
+
+	        if (mode === 'inside') return { width: elem.clientWidth, height: elem.clientHeight };else if (mode === 'center') return { width: (elem.clientWidth + elem.offsetWidth) / 2, height: (elem.offsetHeight + elem.clientHeight) / 2 };else if (mode === 'outside') return { width: elem.offsetWidth, height: elem.offsetHeight };
+	    },
+	    getDimension: function getDimension(elem, mode) {
+	        return Object.assign(this.getSize(elem, mode), this.getPosition(elem));
+	    },
+	    isInRect: function isInRect(position, dimension) {
+	        if (!position || !dimension) return false;
+
+	        return position.left > dimension.left && position.left < dimension.left + dimension.width && position.top > dimension.top && position.top < dimension.top + dimension.height;
+	    },
+	    getComputedStyle: function getComputedStyle(elem, property) {
+	        var computedStyle = elem.currentStyle || window.getComputedStyle(elem, null);
+	        return property ? computedStyle[property] : computedStyle;
+	    }
+	});
+
+	exports.default = _regularjs.dom;
+
+/***/ },
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1140,7 +1273,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _rguiUiBase = __webpack_require__(2);
 
-	var _manager = __webpack_require__(18);
+	var _manager = __webpack_require__(19);
 
 	var _manager2 = _interopRequireDefault(_manager);
 
@@ -1165,11 +1298,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @override
 	     */
 	    config: function config() {
-	        this.data = Object.assign({
+	        this.defaults({
 	            data: null,
 	            'class': 'z-droppable',
 	            dragTarget: 'z-dragTarget'
-	        }, this.data);
+	        });
 	        this.supr();
 
 	        _manager2.default.droppables.push(this);
@@ -1372,7 +1505,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = Droppable;
 
 /***/ },
-/* 20 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1383,11 +1516,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-	var _draggable = __webpack_require__(17);
+	var _draggable = __webpack_require__(18);
 
 	var _draggable2 = _interopRequireDefault(_draggable);
 
-	var _manager = __webpack_require__(18);
+	var _manager = __webpack_require__(19);
 
 	var _manager2 = _interopRequireDefault(_manager);
 
@@ -1401,8 +1534,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {object}                  options.data                     =  绑定属性
 	 * @param {string|Dragable.Proxy|Element|function='self'}  options.data.proxy  @=> 拖拽代理，即拖拽时移动的元素。默认值为`clone`，表示拖拽时会拖起自身的一个拷贝；当值为`self`，拖拽时直接拖起自身。也可以用`<draggable.proxy>`自定义代理，或直接传入一个元素或函数。`''`表示不使用拖拽代理。
 	 * @param {string='both'}           options.data.axis                => 拖拽代理移动时限制的轴向，`both`表示可以在任意方向上移动，`horizontal`表示限制在水平方向上移动，`vertical`表示限制在垂直方向上移动。
-	 * @param {string|object|Element|function} options.data.range       @=> 拖拽范围。值可以为一个{left,top,right,bottom}格式的对象，表示代理元素移动的上下左右边界。当值为`offsetParent`，拖拽时代理元素限制在offsetParent中移动；当值为`parent`；当值为。也可以直接传入一个元素或函数。
-	 * @param {string=inside}           options.data.rangeMode           => 拖拽范围模式，默认为`inside`，表示在拖拽范围内移动，`none`表示代理元素的left,top直接按拖拽范围计算。
+	 * @param {object={x:0,y:0}}        options.data.grid                => 拖拽代理移动时限制的网格。值为一个{x,y}格式的对象，表示水平方向和垂直方向网格的大小。
+	 * @param {string|object|function}  options.data.range              @=> 拖拽范围。值可以为一个{left,top,right,bottom}格式的对象，表示代理元素移动的上下左右边界，也可以传一个函数。当值为`offsetParent`，代理元素限制在offsetParent中移动，仅适用于`position`为`absolute`的情况；当值为`parent`；当值为`window`时，拖拽时代理元素限制在window中移动，仅适用于`position`为`fixed`的情况。
+	 * @param {string=inside}           options.data.rangeMode           => 拖拽范围模式，默认为`inside`，表示在拖拽范围内侧移动，`center`表示在拖拽范围边缘及内侧移动。
 	 * @param {boolean=false}           options.data.disabled            => 是否禁用
 	 * @param {string='z-draggable'}    options.data.class               => 可拖拽时（即disabled=false）给该元素附加此class
 	 * @param {string='z-dragSource'}   options.data.sourceClass         => 拖拽时给起始元素附加此class
@@ -1416,18 +1550,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @override
 	     */
 	    config: function config() {
-	        this.data = Object.assign({
+	        this.defaults({
 	            proxy: 'self',
 	            // value: undefined,
 	            // 'class': 'z-draggable',
 	            // sourceClass: 'z-dragSource',
 	            // proxyClass: 'z-dragProxy'
 	            axis: 'both',
+	            grid: { x: 0, y: 0 },
 	            range: undefined,
 	            rangeMode: 'inside'
-	        }, // grid
-	        // snap
-	        this.data);
+	        });
 	        this.supr();
 	    },
 
@@ -1440,36 +1573,41 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _getRange: function _getRange(proxy) {
 	        var range = void 0;
 
-	        if (_typeof(this.data.range) === 'object') range = this.data.range;else if (this.data.range === 'offsetParent') {
+	        if (_typeof(this.data.range) === 'object') range = this.data.range;else if (typeof this.data.range === 'function') range = this.data.range();else if (this.data.range === 'offsetParent') {
+	            if (_regularjs.dom.getComputedStyle(proxy, 'position') !== 'absolute') proxy.style.position = 'absolute';
+
 	            var offsetParent = proxy.offsetParent;
-	            if (offsetParent) range = { left: 0, top: 0, right: offsetParent.offsetWidth, bottom: offsetParent.offsetHeight };else range = { left: 0, top: 0, right: window.innerWidth, bottom: window.innerHeight };
-	        } else if (this.data.range === 'parent') {
-	            var parent = proxy.parentElement;
-	            if (_regularjs.dom.getComputedStyle(proxy, 'position') === 'fixed') {
-	                range = _regularjs.dom.getDimension(parent);
-	                range.right = range.left + range.width;
-	                range.bottom = range.top + range.height;
-	            }
-	        } else if (range instanceof Element) {
-	            //
+	            range = Object.assign({ left: 0, top: 0 }, _regularjs.dom.getSize(offsetParent, this.data.rangeMode));
+	        } else if (this.data.range === 'window') {
+	            if (_regularjs.dom.getComputedStyle(proxy, 'position') !== 'fixed') proxy.style.position = 'fixed';
+
+	            range = { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight };
 	        }
 
 	        if (range) {
-	            range.width = range.right - range.left;
-	            range.height = range.bottom - range.top;
+	            if (range.width !== undefined && range.height !== undefined) {
+	                range.right = range.left + range.width;
+	                range.bottom = range.top + range.height;
+	            } else if (range.right !== undefined && range.bottom !== undefined) {
+	                range.width = range.right - range.left;
+	                range.height = range.bottom - range.top;
+	            }
 	        }
 
 	        return range;
 	    },
 
 	    /**
-	     * @protected
+	     * @method _onMouseMoveStart(e) 处理第一次鼠标移动事件
+	     * @private
 	     * @override
+	     * @param  {MouseEvent} e 鼠标事件
+	     * @return {void}
 	     */
 	    _onMouseMoveStart: function _onMouseMoveStart(e) {
-	        this.supr(e);
-
+	        this.supr(e, true);
 	        if (_manager2.default.proxy) _manager2.default.range = this._getRange(_manager2.default.proxy);
+	        this._dragStart();
 	    },
 
 	    /**
@@ -1479,20 +1617,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	    restrict: function restrict(params) {
 	        var next = this.supr(params);
 
+	        // 范围约束
 	        if (params.range) {
-	            if (this.data.rangeMode === 'none') {
-	                next.left = Math.min(Math.max(params.range.left, next.left), params.range.right);
-	                next.top = Math.min(Math.max(params.range.top, next.top), params.range.bottom);
-	            } else if (this.data.rangeMode === 'inside') {
+	            if (this.data.rangeMode === 'inside') {
 	                next.left = Math.min(Math.max(params.range.left, next.left), params.range.right - _manager2.default.proxy.offsetWidth);
 	                next.top = Math.min(Math.max(params.range.top, next.top), params.range.bottom - _manager2.default.proxy.offsetHeight);
+	            } else if (this.data.rangeMode === 'center') {
+	                next.left = Math.min(Math.max(params.range.left, next.left), params.range.right);
+	                next.top = Math.min(Math.max(params.range.top, next.top), params.range.bottom);
+	            } else if (this.data.rangeMode === 'outside') {
+	                next.left = Math.min(Math.max(params.range.left - _manager2.default.proxy.offsetWidth, next.left), params.range.right);
+	                next.top = Math.min(Math.max(params.range.top - _manager2.default.proxy.offsetHeight, next.top), params.range.bottom);
 	            }
 	        }
 
-	        if (this.data.grid) {
-	            // @TODO
-	        }
+	        // 网格约束
+	        var grid = this.data.grid;
+	        grid.x && (next.left = Math.round(next.left / grid.x) * grid.x);
+	        grid.y && (next.top = Math.round(next.top / grid.y) * grid.y);
 
+	        // 轴向约束
 	        if (this.data.axis === 'vertical') next.left = params.startLeft;
 	        if (this.data.axis === 'horizontal') next.top = params.startTop;
 
@@ -1503,7 +1647,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = Movable;
 
 /***/ },
-/* 21 */
+/* 23 */
+/***/ function(module, exports) {
+
+	module.exports =[{"type":"element","tag":"movable","attrs":[{"type":"attribute","name":"disabled","value":{"type":"expression","body":"c._sg_('readonly', d, e)||c._sg_('disabled', d, e)","constant":false,"setbody":false}},{"type":"attribute","name":"proxy","value":{"type":"expression","body":"c._sg_('handle', c._sg_('$refs', c))","constant":false,"setbody":"c._ss_('handle',p_,c._sg_('$refs', c), '=', 0)"}},{"type":"attribute","name":"axis","value":"horizontal"},{"type":"attribute","name":"grid","value":{"type":"expression","body":"c._sg_('_grid', d, e)","constant":false,"setbody":"c._ss_('_grid',p_,d, '=', 1)"}},{"type":"attribute","name":"range","value":"offsetParent"},{"type":"attribute","name":"rangeMode","value":"center"},{"type":"attribute","name":"on-dragstart","value":{"type":"expression","body":"c['_onDragStart'](c._sg_('$event', d, e))","constant":false,"setbody":false}},{"type":"attribute","name":"on-drag","value":{"type":"expression","body":"c['_onDrag'](c._sg_('$event', d, e))","constant":false,"setbody":false}}],"children":[{"type":"text","text":"\n"},{"type":"element","tag":"div","attrs":[{"type":"attribute","name":"class","value":{"type":"expression","body":"['u-slider ',c._sg_('class', d, e)].join('')","constant":false,"setbody":false}},{"type":"attribute","name":"z-dis","value":{"type":"expression","body":"c._sg_('disabled', d, e)","constant":false,"setbody":"c._ss_('disabled',p_,d, '=', 1)"}},{"type":"attribute","name":"r-hide","value":{"type":"expression","body":"(!c._sg_('visible', d, e))","constant":false,"setbody":false}},{"type":"attribute","name":"on-mousedown","value":{"type":"expression","body":"c['_onMouseDown'](c._sg_('$event', d, e))","constant":false,"setbody":false}}],"children":[{"type":"text","text":"\n    "},{"type":"element","tag":"div","attrs":[{"type":"attribute","name":"class","value":"slider_track"}],"children":[{"type":"text","text":"\n        "},{"type":"element","tag":"div","attrs":[{"type":"attribute","name":"class","value":"slider_trail"},{"type":"attribute","name":"style","value":{"type":"expression","body":"['width: ',c._sg_('percent', d, e),'%'].join('')","constant":false,"setbody":false}}],"children":[]},{"type":"text","text":"\n    "}]},{"type":"text","text":"\n    "},{"type":"element","tag":"div","attrs":[{"type":"attribute","name":"class","value":"slider_handle"},{"type":"attribute","name":"ref","value":"handle"},{"type":"attribute","name":"style","value":{"type":"expression","body":"['left: ',c._sg_('percent', d, e),'%'].join('')","constant":false,"setbody":false}}],"children":[]},{"type":"text","text":"\n"}]},{"type":"text","text":"\n"}]}]
+
+/***/ },
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1512,13 +1662,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 
-	var _rguiUiListview = __webpack_require__(22);
+	var _rguiUiListview = __webpack_require__(25);
 
-	var _listView = __webpack_require__(27);
+	var _listView = __webpack_require__(30);
 
 	var _listView2 = _interopRequireDefault(_listView);
 
-	var _item = __webpack_require__(28);
+	var _item = __webpack_require__(31);
 
 	var _item2 = _interopRequireDefault(_item);
 
@@ -1559,7 +1709,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = MusicListView;
 
 /***/ },
-/* 22 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1569,11 +1719,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.Item = exports.ListView = undefined;
 
-	var _listView = __webpack_require__(23);
+	var _listView = __webpack_require__(26);
 
 	var _listView2 = _interopRequireDefault(_listView);
 
-	var _item = __webpack_require__(25);
+	var _item = __webpack_require__(28);
 
 	var _item2 = _interopRequireDefault(_item);
 
@@ -1583,7 +1733,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.Item = _item2.default;
 
 /***/ },
-/* 23 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1594,7 +1744,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _rguiUiBase = __webpack_require__(2);
 
-	var _index = __webpack_require__(24);
+	var _index = __webpack_require__(27);
 
 	var _index2 = _interopRequireDefault(_index);
 
@@ -1606,6 +1756,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {object}                  options.data                     =  绑定属性
 	 * @param {var}                     options.data.value              <=> 当前选择的值
 	 * @param {boolean=false}           options.data.multiple            => 是否可以多选
+	 * @param {boolean=false}           options.data.cancelable          => 是否可以取消选择
 	 * @param {boolean=false}           options.data.readonly            => 是否只读
 	 * @param {boolean=false}           options.data.disabled            => 是否禁用
 	 * @param {boolean=true}            options.data.visible             => 是否显示
@@ -1619,15 +1770,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @override
 	     */
 	    config: function config() {
-	        var _this = this;
-
-	        this.data = Object.assign({
+	        this.defaults({
 	            _list: [],
 	            _selected: undefined,
 	            value: undefined,
-	            multiple: false
-	        }, this.data);
+	            multiple: false,
+	            cancelable: false
+	        });
 	        this.supr();
+	        this.watch();
+	    },
+
+	    /**
+	     * @protected
+	     * @override
+	     */
+	    watch: function watch() {
+	        var _this = this;
 
 	        this.$watch('value', function (newValue, oldValue) {
 	            if (!_this.data._selected || _this.data._selected.data.value !== newValue) _this.data._selected = _this.data._list.find(function (item) {
@@ -1665,16 +1824,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	    select: function select(item) {
 	        if (this.data.readonly || this.data.disabled) return;
 
-	        if (this.data.multiple) item.data.selected = !item.data.selected;else this.data._selected = item;
+	        if (this.data.multiple) item.data.selected = !item.data.selected;else if (this.data.cancelable && this.data._selected === item) this.data._selected = undefined;else this.data._selected = item;
 
 	        /**
 	         * @event select 选择某一项时触发
 	         * @property {object} sender 事件发送对象
 	         * @property {Item} selected 当前选择项
+	         * @property {var} value 当前选择值
 	         */
 	        this.$emit('select', {
 	            sender: this,
-	            selected: item
+	            selected: item,
+	            value: item.data.value
 	        });
 	    }
 	});
@@ -1682,13 +1843,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = ListView;
 
 /***/ },
-/* 24 */
+/* 27 */
 /***/ function(module, exports) {
 
 	module.exports =[{"type":"element","tag":"ul","attrs":[{"type":"attribute","name":"class","value":{"type":"expression","body":"['m-listView ',c._sg_('class', d, e)].join('')","constant":false,"setbody":false}},{"type":"attribute","name":"z-dis","value":{"type":"expression","body":"c._sg_('disabled', d, e)","constant":false,"setbody":"c._ss_('disabled',p_,d, '=', 1)"}},{"type":"attribute","name":"r-hide","value":{"type":"expression","body":"(!c._sg_('visible', d, e))","constant":false,"setbody":false}}],"children":[{"type":"text","text":"\n    "},{"type":"template","content":{"type":"expression","body":"c._sg_('$body', c)","constant":false,"setbody":"c._ss_('$body',p_,c, '=', 0)"}},{"type":"text","text":"\n"}]}]
 
 /***/ },
-/* 25 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1699,7 +1860,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _rguiUiBase = __webpack_require__(2);
 
-	var _index = __webpack_require__(26);
+	var _index = __webpack_require__(29);
 
 	var _index2 = _interopRequireDefault(_index);
 
@@ -1725,17 +1886,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @override
 	     */
 	    config: function config() {
-	        this.data = Object.assign({
+	        this.defaults({
 	            value: undefined,
 	            selected: false,
 	            disabled: false,
 	            divider: false,
 	            title: undefined
-	        }, this.data);
+	        });
 	        this.supr();
 
 	        // 没有$outer就直接报错
 	        this.$outer.data._list.push(this);
+
+	        // 多选时不使用`value`和`_selected`
+	        if (this.$outer.data.multiple) return;
+	        // 与$outer的value相等时自动设为选中
+	        if (this.data.value !== undefined && this.$outer.data.value === this.data.value) this.data.selected = true;
 	        // 初始化时选择selected为true的item
 	        if (this.data.selected) this.$outer.data._selected = this;
 	    },
@@ -1765,9 +1931,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        /**
 	         * @event select 选择该项时触发
 	         * @property {object} sender 事件发送对象
+	         * @property {Item} selected 当前选择项
+	         * @property {var} value 当前选择值
 	         */
 	        this.$emit('select', {
-	            sender: this
+	            sender: this,
+	            selected: this,
+	            value: this.data.value
 	        });
 	    }
 	}).directive({
@@ -1777,58 +1947,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = Item;
 
 /***/ },
-/* 26 */
+/* 29 */
 /***/ function(module, exports) {
 
 	module.exports =[{"type":"element","tag":"li","attrs":[{"type":"attribute","name":"class","value":{"type":"expression","body":"c._sg_('class', d, e)","constant":false,"setbody":"c._ss_('class',p_,d, '=', 1)"}},{"type":"attribute","name":"z-sel","value":{"type":"expression","body":"c._sg_('selected', d, e)","constant":false,"setbody":"c._ss_('selected',p_,d, '=', 1)"}},{"type":"attribute","name":"z-dis","value":{"type":"expression","body":"c._sg_('disabled', d, e)","constant":false,"setbody":"c._ss_('disabled',p_,d, '=', 1)"}},{"type":"attribute","name":"z-divider","value":{"type":"expression","body":"c._sg_('divider', d, e)","constant":false,"setbody":"c._ss_('divider',p_,d, '=', 1)"}},{"type":"attribute","name":"title","value":{"type":"expression","body":"c._sg_('title', d, e)","constant":false,"setbody":"c._ss_('title',p_,d, '=', 1)"}},{"type":"attribute","name":"r-hide","value":{"type":"expression","body":"(!c._sg_('visible', d, e))","constant":false,"setbody":false}},{"type":"attribute","name":"on-click","value":{"type":"expression","body":"c['select']()","constant":false,"setbody":false}}],"children":[{"type":"text","text":"\n    "},{"type":"template","content":{"type":"expression","body":"c._sg_('$body', c)","constant":false,"setbody":"c._ss_('$body',p_,c, '=', 0)"}},{"type":"text","text":"\n"}]}]
 
 /***/ },
-/* 27 */
+/* 30 */
 /***/ function(module, exports) {
 
 	module.exports =[{"type":"element","tag":"table","attrs":[{"type":"attribute","name":"class","value":{"type":"expression","body":"['m-table ',c._sg_('class', d, e)].join('')","constant":false,"setbody":false}},{"type":"attribute","name":"z-dis","value":{"type":"expression","body":"c._sg_('disabled', d, e)","constant":false,"setbody":"c._ss_('disabled',p_,d, '=', 1)"}},{"type":"attribute","name":"r-hide","value":{"type":"expression","body":"(!c._sg_('visible', d, e))","constant":false,"setbody":false}}],"children":[{"type":"text","text":"\n    "},{"type":"element","tag":"thead","attrs":[],"children":[{"type":"text","text":"\n        "},{"type":"element","tag":"tr","attrs":[],"children":[{"type":"text","text":"\n            "},{"type":"element","tag":"th","attrs":[{"type":"attribute","name":"width","value":"54"}],"children":[{"type":"element","tag":"input","attrs":[{"type":"attribute","name":"type","value":"checkbox"},{"type":"attribute","name":"class","value":"table_checkbox"},{"type":"attribute","name":"r-model","value":{"type":"expression","body":"c._sg_('allChecked', d, e)","constant":false,"setbody":"c._ss_('allChecked',p_,d, '=', 1)"}}]}]},{"type":"text","text":"\n            "},{"type":"element","tag":"th","attrs":[],"children":[{"type":"text","text":"歌曲标题"}]},{"type":"text","text":"\n            "},{"type":"element","tag":"th","attrs":[{"type":"attribute","name":"width","value":"90"}],"children":[{"type":"text","text":"时长"}]},{"type":"text","text":"\n            "},{"type":"element","tag":"th","attrs":[{"type":"attribute","name":"width","value":"20%"}],"children":[{"type":"text","text":"歌手"}]},{"type":"text","text":"\n            "},{"type":"element","tag":"th","attrs":[{"type":"attribute","name":"width","value":"24%"}],"children":[{"type":"text","text":"专辑"}]},{"type":"text","text":"\n        "}]},{"type":"text","text":"\n    "}]},{"type":"text","text":"\n    "},{"type":"element","tag":"tbody","attrs":[],"children":[{"type":"text","text":"\n        "},{"type":"template","content":{"type":"expression","body":"c._sg_('$body', c)","constant":false,"setbody":"c._ss_('$body',p_,c, '=', 0)"}},{"type":"text","text":"\n    "}]},{"type":"text","text":"\n"}]}]
 
 /***/ },
-/* 28 */
+/* 31 */
 /***/ function(module, exports) {
 
 	module.exports =[{"type":"element","tag":"tr","attrs":[{"type":"attribute","name":"class","value":{"type":"expression","body":"c._sg_('class', d, e)","constant":false,"setbody":"c._ss_('class',p_,d, '=', 1)"}},{"type":"attribute","name":"z-dis","value":{"type":"expression","body":"c._sg_('disabled', d, e)","constant":false,"setbody":"c._ss_('disabled',p_,d, '=', 1)"}},{"type":"attribute","name":"z-divider","value":{"type":"expression","body":"c._sg_('divider', d, e)","constant":false,"setbody":"c._ss_('divider',p_,d, '=', 1)"}},{"type":"attribute","name":"title","value":{"type":"expression","body":"c._sg_('title', d, e)","constant":false,"setbody":"c._ss_('title',p_,d, '=', 1)"}},{"type":"attribute","name":"r-hide","value":{"type":"expression","body":"(!c._sg_('visible', d, e))","constant":false,"setbody":false}}],"children":[{"type":"text","text":"\n    "},{"type":"element","tag":"td","attrs":[],"children":[{"type":"text","text":"\n        "},{"type":"element","tag":"input","attrs":[{"type":"attribute","name":"type","value":"checkbox"},{"type":"attribute","name":"class","value":"table_checkbox"},{"type":"attribute","name":"r-model","value":{"type":"expression","body":"c._sg_('checked', d, e)","constant":false,"setbody":"c._ss_('checked',p_,d, '=', 1)"}},{"type":"attribute","name":"disabled","value":{"type":"expression","body":"c._sg_('disabled', d, e)","constant":false,"setbody":"c._ss_('disabled',p_,d, '=', 1)"}}]},{"type":"text","text":"\n        "},{"type":"element","tag":"a","attrs":[{"type":"attribute","name":"class","value":"table_play"},{"type":"attribute","name":"z-sel","value":{"type":"expression","body":"c._sg_('selected', d, e)","constant":false,"setbody":"c._ss_('selected',p_,d, '=', 1)"}},{"type":"attribute","name":"on-click","value":{"type":"expression","body":"c['select']()","constant":false,"setbody":false}}],"children":[]},{"type":"text","text":"\n    "}]},{"type":"text","text":"\n    "},{"type":"element","tag":"td","attrs":[{"type":"attribute","name":"class","value":"f-toe"}],"children":[{"type":"element","tag":"a","attrs":[],"children":[{"type":"expression","body":"c._sg_('title', c._sg_('value', d, e))","constant":false,"setbody":"c._ss_('title',p_,c._sg_('value', d, e), '=', 0)"}]}]},{"type":"text","text":"\n    "},{"type":"element","tag":"td","attrs":[{"type":"attribute","name":"class","value":"table_duration"}],"children":[{"type":"text","text":"\n        "},{"type":"element","tag":"span","attrs":[],"children":[{"type":"expression","body":"(function(t){t = c._f_('timeFormat' ).get.call( c,t);return t})(c._sg_('duration', c._sg_('value', d, e)))","constant":false,"setbody":"c._ss_('duration',(function(t){t = c._f_('timeFormat' ).set.call( c,t);return t})(p_),c._sg_('value', d, e), '=', 0)"}]},{"type":"text","text":"\n        "},{"type":"element","tag":"div","attrs":[],"children":[{"type":"text","text":"\n            "},{"type":"element","tag":"a","attrs":[{"type":"attribute","name":"class","value":"table_btn table_btn-collect"}],"children":[]},{"type":"text","text":"\n            "},{"type":"element","tag":"a","attrs":[{"type":"attribute","name":"class","value":"table_btn table_btn-share"}],"children":[]},{"type":"text","text":"\n            "},{"type":"element","tag":"a","attrs":[{"type":"attribute","name":"class","value":"table_btn table_btn-download"}],"children":[]},{"type":"text","text":"\n            "},{"type":"element","tag":"a","attrs":[{"type":"attribute","name":"class","value":"table_btn table_btn-remove"},{"type":"attribute","name":"on-click","value":{"type":"expression","body":"c['remove']()","constant":false,"setbody":false}}],"children":[]},{"type":"text","text":"\n        "}]},{"type":"text","text":"\n    "}]},{"type":"text","text":"\n    "},{"type":"element","tag":"td","attrs":[{"type":"attribute","name":"class","value":"f-toe"}],"children":[{"type":"element","tag":"a","attrs":[],"children":[{"type":"expression","body":"c._sg_('artist', c._sg_('value', d, e))","constant":false,"setbody":"c._ss_('artist',p_,c._sg_('value', d, e), '=', 0)"}]}]},{"type":"text","text":"\n    "},{"type":"element","tag":"td","attrs":[{"type":"attribute","name":"class","value":"f-toe"}],"children":[{"type":"element","tag":"a","attrs":[],"children":[{"type":"expression","body":"c._sg_('album', c._sg_('value', d, e))","constant":false,"setbody":"c._ss_('album',p_,c._sg_('value', d, e), '=', 0)"}]}]},{"type":"text","text":"\n"}]}]
-
-/***/ },
-/* 29 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _rguiUiBase = __webpack_require__(2);
-
-	var _index = __webpack_require__(30);
-
-	var _index2 = _interopRequireDefault(_index);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var Navbar = _rguiUiBase.Component.extend({
-	    name: 'navbar',
-	    template: _index2.default,
-	    isCurrent: function isCurrent(type) {
-	        var hash = location.href.split('#')[1] || '';
-
-	        return hash.includes(type);
-	    }
-	});
-
-	exports.default = Navbar;
-
-/***/ },
-/* 30 */
-/***/ function(module, exports) {
-
-	module.exports =[{"type":"element","tag":"ul","attrs":[{"type":"attribute","name":"class","value":"m-navbar f-fl"}],"children":[{"type":"text","text":"\n    "},{"type":"element","tag":"li","attrs":[{"type":"attribute","name":"z-crt","value":{"type":"expression","body":"c['isCurrent']('explore')","constant":false,"setbody":false}}],"children":[{"type":"element","tag":"a","attrs":[{"type":"attribute","name":"href","value":"#explore"}],"children":[{"type":"text","text":"发现音乐"}]}]},{"type":"text","text":"\n    "},{"type":"element","tag":"li","attrs":[{"type":"attribute","name":"z-crt","value":{"type":"expression","body":"c['isCurrent']('mine')","constant":false,"setbody":false}}],"children":[{"type":"element","tag":"a","attrs":[{"type":"attribute","name":"href","value":"#mine"}],"children":[{"type":"text","text":"我的音乐"}]}]},{"type":"text","text":"\n    "},{"type":"element","tag":"li","attrs":[{"type":"attribute","name":"z-crt","value":{"type":"expression","body":"c['isCurrent']('friend')","constant":false,"setbody":false}}],"children":[{"type":"element","tag":"a","attrs":[{"type":"attribute","name":"href","value":"#friend"}],"children":[{"type":"text","text":"朋友"}]}]},{"type":"text","text":"\n    "},{"type":"element","tag":"li","attrs":[{"type":"attribute","name":"z-crt","value":{"type":"expression","body":"c['isCurrent']('download')","constant":false,"setbody":false}}],"children":[{"type":"element","tag":"a","attrs":[{"type":"attribute","name":"href","value":"#download"}],"children":[{"type":"text","text":"下载客户端"}]}]},{"type":"text","text":"\n"}]}]
 
 /***/ }
 /******/ ])
